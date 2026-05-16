@@ -1,6 +1,6 @@
 import api from './axiosConfig';
 
-export const createProject  = (data) =>
+export const createProject = (data) =>
   api.post('/api/v1/projects', data);
 
 export const getProjectById = (id) =>

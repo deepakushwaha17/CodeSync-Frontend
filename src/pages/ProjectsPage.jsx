@@ -14,87 +14,121 @@ import {
 } from '../api/projectApi';
 
 const s = {
-  page: { minHeight: '100vh', background: '#0d1117' },
+  page: {
+    minHeight: '100vh',
+    background:
+      'linear-gradient(135deg,#f8fbff,#eef4ff)',
+  },
+
   body: {
     maxWidth: '1100px',
-    margin:   '0 auto',
-    padding:  '32px 20px',
+    margin: '0 auto',
+    padding: '36px 20px',
   },
+
   topRow: {
-    display:    'flex',
+    display: 'flex',
     alignItems: 'center',
-    gap:        '12px',
-    marginBottom:'24px',
+    gap: '14px',
+    marginBottom: '28px',
+    flexWrap: 'wrap',
   },
+
   title: {
-    fontSize:   '22px',
-    fontWeight: '700',
-    color:      '#e6edf3',
-    flex:       1,
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#111827',
+    flex: 1,
   },
+
   searchInput: {
-    padding:      '8px 14px',
-    background:   '#161b22',
-    border:       '1px solid #30363d',
-    borderRadius: '8px',
-    color:        '#e6edf3',
-    fontSize:     '13px',
-    outline:      'none',
-    width:        '220px',
+    padding: '11px 16px',
+    background: '#ffffff',
+    border: '1px solid #dbe3f0',
+    borderRadius: '12px',
+    color: '#111827',
+    fontSize: '14px',
+    outline: 'none',
+    width: '240px',
+    boxShadow:
+      '0 8px 20px rgba(15,23,42,0.04)',
+    transition: 'all 0.2s ease',
   },
+
   newBtn: {
-    padding:      '8px 16px',
-    background:   '#238636',
-    border:       '1px solid #2ea043',
-    borderRadius: '7px',
-    color:        '#fff',
-    fontSize:     '13px',
-    fontWeight:   '600',
-    cursor:       'pointer',
-    whiteSpace:   'nowrap',
+    padding: '11px 18px',
+    background:
+      'linear-gradient(135deg,#2563eb,#4f46e5)',
+    border: 'none',
+    borderRadius: '12px',
+    color: '#fff',
+    fontSize: '14px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    boxShadow:
+      '0 10px 20px rgba(37,99,235,0.22)',
+    transition: 'all 0.2s ease',
   },
+
   tabs: {
-    display:      'flex',
-    gap:          '4px',
-    marginBottom: '24px',
-    borderBottom: '1px solid #21262d',
+    display: 'flex',
+    gap: '8px',
+    marginBottom: '28px',
+    background: '#eef2ff',
+    border: '1px solid #dbe3f0',
+    padding: '6px',
+    borderRadius: '14px',
+    width: 'fit-content',
   },
+
   tab: {
-    padding:         '8px 16px',
-    background:      'none',
-    border:          'none',
-    borderBottom:    '2px solid transparent',
-    color:           '#8b949e',
-    fontSize:        '14px',
-    fontWeight:      '500',
-    cursor:          'pointer',
-    marginBottom:    '-1px',
-    transition:      'all 0.15s',
+    padding: '10px 18px',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: '10px',
+    color: '#6b7280',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
   },
+
   tabActive: {
-    color:           '#e6edf3',
-    borderBottomColor:'#58a6ff',
+    background: '#ffffff',
+    color: '#2563eb',
+    boxShadow:
+      '0 8px 18px rgba(37,99,235,0.10)',
   },
+
   grid: {
-    display:             'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap:                 '16px',
+    display: 'grid',
+    gridTemplateColumns:
+      'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: '18px',
   },
+
   emptyState: {
-    padding:   '64px',
+    padding: '80px 30px',
     textAlign: 'center',
-    color:     '#8b949e',
-    fontSize:  '14px',
+    color: '#6b7280',
+    fontSize: '14px',
+    background: 'rgba(255,255,255,0.82)',
+    border: '1px solid #e5eaf5',
+    borderRadius: '22px',
+    boxShadow:
+      '0 16px 36px rgba(15,23,42,0.05)',
+    backdropFilter: 'blur(10px)',
   },
 };
 
 export default function ProjectsPage() {
-  const navigate              = useNavigate();
-  const { userId }            = useAuth();
-  const [tab, setTab]         = useState('mine');
+  const navigate = useNavigate();
+  const { userId } = useAuth();
+  const [tab, setTab] = useState('mine');
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch]   = useState('');
+  const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
 
   const load = async () => {
@@ -138,10 +172,27 @@ export default function ProjectsPage() {
             value={search}
             onChange={handleSearch}
             style={s.searchInput}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#2563eb';
+              e.target.style.boxShadow =
+                '0 0 0 4px rgba(37,99,235,0.12)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#dbe3f0';
+              e.target.style.boxShadow =
+                '0 8px 20px rgba(15,23,42,0.04)';
+            }}
           />
           <button
             style={s.newBtn}
             onClick={() => setShowModal(true)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform =
+                'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'none';
+            }}
           >
             + New Project
           </button>
@@ -149,7 +200,7 @@ export default function ProjectsPage() {
 
         <div style={s.tabs}>
           {[
-            { key: 'mine',   label: 'My Projects'   },
+            { key: 'mine', label: 'My Projects' },
             { key: 'public', label: 'Explore Public' },
           ].map((t) => (
             <button
@@ -167,27 +218,27 @@ export default function ProjectsPage() {
 
         {loading ? <Loader /> :
           projects.length === 0 ? (
-          <div style={s.emptyState}>
-            <div style={{
-              fontSize: '40px', marginBottom: '12px'
-            }}>
-              📂
+            <div style={s.emptyState}>
+              <div style={{
+                fontSize: '40px', marginBottom: '12px'
+              }}>
+                📂
+              </div>
+              No projects found.
             </div>
-            No projects found.
-          </div>
-        ) : (
-          <div style={s.grid}>
-            {projects.map((p) => (
-              <ProjectCard
-                key={p.projectId}
-                project={p}
-                onClick={() =>
-                  navigate(`/projects/${p.projectId}`)
-                }
-              />
-            ))}
-          </div>
-        )}
+          ) : (
+            <div style={s.grid}>
+              {projects.map((p) => (
+                <ProjectCard
+                  key={p.projectId}
+                  project={p}
+                  onClick={() =>
+                    navigate(`/projects/${p.projectId}`)
+                  }
+                />
+              ))}
+            </div>
+          )}
       </div>
 
       {showModal && (

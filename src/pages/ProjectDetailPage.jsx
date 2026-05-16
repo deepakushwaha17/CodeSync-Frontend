@@ -20,9 +20,9 @@ import {
 } from '../api/fileApi';
 
 const FILE_ICONS = {
-  java:'☕', py:'🐍', js:'🟨', ts:'🔷',
-  go:'🐹', rs:'🦀', cpp:'⚙️', c:'⚙️',
-  rb:'💎', php:'🐘', kt:'🎯', swift:'🍎',
+  java: '☕', py: '🐍', js: '🟨', ts: '🔷',
+  go: '🐹', rs: '🦀', cpp: '⚙️', c: '⚙️',
+  rb: '💎', php: '🐘', kt: '🎯', swift: '🍎',
 };
 
 function fileIcon(node) {
@@ -32,157 +32,199 @@ function fileIcon(node) {
 }
 
 const s = {
-  page:  { minHeight: '100vh', background: '#0d1117' },
+  page: {
+    minHeight: '100vh',
+    background:
+      'linear-gradient(135deg,#f8fbff,#eef4ff)',
+  },
+
   body: {
     maxWidth: '1100px',
-    margin:   '0 auto',
-    padding:  '28px 20px',
+    margin: '0 auto',
+    padding: '32px 20px',
   },
+
   header: {
-    background:   '#161b22',
-    border:       '1px solid #21262d',
-    borderRadius: '10px',
-    padding:      '24px',
+    background: 'rgba(255,255,255,0.82)',
+    border: '1px solid #e5eaf5',
+    borderRadius: '22px',
+    padding: '28px',
     marginBottom: '24px',
+    backdropFilter: 'blur(12px)',
+    boxShadow:
+      '0 18px 40px rgba(15,23,42,0.06)',
   },
+
   topRow: {
-    display:     'flex',
-    alignItems:  'flex-start',
-    gap:         '16px',
-    marginBottom:'12px',
-  },
-  name: {
-    fontSize:   '22px',
-    fontWeight: '700',
-    color:      '#58a6ff',
-    flex:       1,
-  },
-  visBadge: {
-    fontSize:     '12px',
-    padding:      '3px 10px',
-    borderRadius: '12px',
-    fontWeight:   '500',
-  },
-  desc: {
-    fontSize:     '14px',
-    color:        '#8b949e',
-    marginBottom: '16px',
-  },
-  metaRow: {
-    display:      'flex',
-    gap:          '20px',
-    flexWrap:     'wrap',
-    marginBottom: '16px',
-  },
-  meta: {
-    fontSize: '13px',
-    color:    '#8b949e',
-    display:  'flex',
-    gap:      '5px',
-  },
-  actionsRow: {
-    display:  'flex',
-    gap:      '10px',
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '16px',
+    marginBottom: '14px',
     flexWrap: 'wrap',
   },
+
+  name: {
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#2563eb',
+    flex: 1,
+  },
+
+  visBadge: {
+    fontSize: '12px',
+    padding: '5px 12px',
+    borderRadius: '999px',
+    fontWeight: '600',
+  },
+
+  desc: {
+    fontSize: '14px',
+    color: '#4b5563',
+    marginBottom: '18px',
+    lineHeight: '1.6',
+  },
+
+  metaRow: {
+    display: 'flex',
+    gap: '20px',
+    flexWrap: 'wrap',
+    marginBottom: '18px',
+  },
+
+  meta: {
+    fontSize: '13px',
+    color: '#6b7280',
+    display: 'flex',
+    gap: '5px',
+    fontWeight: '500',
+  },
+
+  actionsRow: {
+    display: 'flex',
+    gap: '12px',
+    flexWrap: 'wrap',
+  },
+
   btn: {
-    padding:      '7px 14px',
-    borderRadius: '7px',
-    fontSize:     '13px',
-    fontWeight:   '500',
-    cursor:       'pointer',
-    border:       '1px solid #30363d',
-    background:   '#21262d',
-    color:        '#e6edf3',
-  },
-  primaryBtn: {
-    background:  '#238636',
-    borderColor: '#2ea043',
-    color:       '#fff',
-    fontWeight:  '600',
-  },
-  dangerBtn: {
-    background:  'none',
-    borderColor: '#f85149',
-    color:       '#f85149',
-  },
-  cols: {
-    display:             'grid',
-    gridTemplateColumns: '280px 1fr',
-    gap:                 '16px',
-  },
-  panel: {
-    background:   '#161b22',
-    border:       '1px solid #21262d',
+    padding: '9px 16px',
     borderRadius: '10px',
-    overflow:     'hidden',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    border: '1px solid #dbe3f0',
+    background: '#ffffff',
+    color: '#111827',
+    transition: 'all 0.2s ease',
+    boxShadow:
+      '0 8px 20px rgba(15,23,42,0.04)',
   },
+
+  primaryBtn: {
+    background:
+      'linear-gradient(135deg,#2563eb,#4f46e5)',
+    border: 'none',
+    color: '#fff',
+    boxShadow:
+      '0 10px 20px rgba(37,99,235,0.20)',
+  },
+
+  dangerBtn: {
+    background: '#fef2f2',
+    borderColor: '#fecaca',
+    color: '#dc2626',
+  },
+
+  cols: {
+    display: 'grid',
+    gridTemplateColumns: '280px 1fr',
+    gap: '18px',
+  },
+
+  panel: {
+    background: 'rgba(255,255,255,0.82)',
+    border: '1px solid #e5eaf5',
+    borderRadius: '20px',
+    overflow: 'hidden',
+    backdropFilter: 'blur(10px)',
+    boxShadow:
+      '0 16px 36px rgba(15,23,42,0.05)',
+  },
+
   panelHeader: {
-    padding:        '12px 16px',
-    borderBottom:   '1px solid #21262d',
-    fontSize:       '13px',
-    fontWeight:     '600',
-    color:          '#8b949e',
-    display:        'flex',
-    alignItems:     'center',
+    padding: '14px 18px',
+    borderBottom: '1px solid #e5eaf5',
+    fontSize: '13px',
+    fontWeight: '700',
+    color: '#6b7280',
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
+
   iconBtn: {
-    background:   'none',
-    border:       'none',
-    color:        '#8b949e',
-    cursor:       'pointer',
-    fontSize:     '13px',
-    padding:      '2px 6px',
-    borderRadius: '4px',
+    background: '#ffffff',
+    border: '1px solid #dbe3f0',
+    color: '#6b7280',
+    cursor: 'pointer',
+    fontSize: '13px',
+    padding: '5px 8px',
+    borderRadius: '8px',
+    transition: 'all 0.2s ease',
   },
+
   fileItem: {
-    padding:     '8px 16px',
-    fontSize:    '13px',
-    color:       '#e6edf3',
-    cursor:      'pointer',
-    display:     'flex',
-    alignItems:  'center',
-    gap:         '8px',
-    borderBottom:'1px solid #21262d',
-    transition:  'background 0.1s',
+    padding: '10px 16px',
+    fontSize: '13px',
+    color: '#111827',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    borderBottom: '1px solid #eef2ff',
+    transition: 'all 0.15s ease',
   },
+
   memberItem: {
-    padding:     '12px 16px',
-    display:     'flex',
-    alignItems:  'center',
-    gap:         '10px',
-    borderBottom:'1px solid #21262d',
+    padding: '14px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    borderBottom: '1px solid #eef2ff',
   },
+
   memberAvatar: {
-    width:          '32px',
-    height:         '32px',
-    borderRadius:   '50%',
+    width: '34px',
+    height: '34px',
+    borderRadius: '50%',
     background:
-      'linear-gradient(135deg, #58a6ff, #bc8cff)',
-    display:        'flex',
-    alignItems:     'center',
+      'linear-gradient(135deg,#2563eb,#7c3aed)',
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'center',
-    fontSize:       '12px',
-    fontWeight:     '700',
-    color:          '#fff',
-    flexShrink:     0,
+    fontSize: '12px',
+    fontWeight: '700',
+    color: '#fff',
+    flexShrink: 0,
+    boxShadow:
+      '0 8px 20px rgba(37,99,235,0.18)',
   },
+
   addMemberBox: {
-    padding:      '12px 16px',
-    borderBottom: '1px solid #21262d',
-    display:      'flex',
-    gap:          '8px',
+    padding: '14px 16px',
+    borderBottom: '1px solid #eef2ff',
+    display: 'flex',
+    gap: '10px',
   },
+
   addInput: {
-    flex:         1,
-    padding:      '7px 10px',
-    background:   '#0d1117',
-    border:       '1px solid #30363d',
-    borderRadius: '6px',
-    color:        '#e6edf3',
-    fontSize:     '13px',
-    outline:      'none',
+    flex: 1,
+    padding: '10px 12px',
+    background: '#ffffff',
+    border: '1px solid #dbe3f0',
+    borderRadius: '10px',
+    color: '#111827',
+    fontSize: '13px',
+    outline: 'none',
   },
 };
 
@@ -200,7 +242,7 @@ function FileTree({ nodes, depth = 0, onFileClick }) {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background =
-                '#21262d';
+                '#eef4ff';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background =
@@ -228,12 +270,12 @@ function FileTree({ nodes, depth = 0, onFileClick }) {
           {node.fileType === 'FOLDER'
             && open[node.fileId]
             && node.children?.length > 0 && (
-            <FileTree
-              nodes={node.children}
-              depth={depth + 1}
-              onFileClick={onFileClick}
-            />
-          )}
+              <FileTree
+                nodes={node.children}
+                depth={depth + 1}
+                onFileClick={onFileClick}
+              />
+            )}
         </React.Fragment>
       ))}
     </>
@@ -252,15 +294,15 @@ function findFirstFile(nodes) {
 }
 
 export default function ProjectDetailPage() {
-  const { projectId }    = useParams();
-  const navigate         = useNavigate();
-  const { userId }       = useAuth();
+  const { projectId } = useParams();
+  const navigate = useNavigate();
+  const { userId } = useAuth();
   const [project, setPr] = useState(null);
-  const [tree, setTree]  = useState([]);
-  const [members, setMem]= useState([]);
-  const [loading, setL]  = useState(true);
+  const [tree, setTree] = useState([]);
+  const [members, setMem] = useState([]);
+  const [loading, setL] = useState(true);
   const [memberInput, setMemberInput] = useState('');
-  const [showAdd, setShowAdd]         = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -271,8 +313,8 @@ export default function ProjectDetailPage() {
           getMembers(projectId),
         ]);
         setPr(pRes.data.data);
-        setTree(tRes.data.data  || []);
-        setMem(mRes.data.data   || []);
+        setTree(tRes.data.data || []);
+        setMem(mRes.data.data || []);
       } catch {
         toast.error('Failed to load project.');
       } finally {
@@ -310,11 +352,11 @@ export default function ProjectDetailPage() {
     if (!name) return;
     try {
       await createFile({
-        projectId:  Number(projectId),
+        projectId: Number(projectId),
         name,
         parentPath: '',
-        language:   name.split('.').pop(),
-        content:    '',
+        language: name.split('.').pop(),
+        content: '',
       });
       toast.success('File created!');
       const tRes = await getFileTree(projectId);
@@ -329,7 +371,7 @@ export default function ProjectDetailPage() {
     if (!name) return;
     try {
       await createFolder({
-        projectId:  Number(projectId),
+        projectId: Number(projectId),
         name,
         parentPath: '',
       });
@@ -359,7 +401,7 @@ export default function ProjectDetailPage() {
     try {
       await addMember(projectId, {
         userId: Number(memberInput),
-        role:   'EDITOR',
+        role: 'EDITOR',
       });
       toast.success('Member added!');
       setMemberInput('');
@@ -391,10 +433,10 @@ export default function ProjectDetailPage() {
               ...s.visBadge,
               background:
                 project?.visibility === 'PUBLIC'
-                  ? '#1f6feb33' : '#30363d',
+                   ? '#dbeafe' : '#f3f4f6',
               color:
                 project?.visibility === 'PUBLIC'
-                  ? '#58a6ff' : '#8b949e',
+                  ? '#2563eb' : '#4b5563',
             }}>
               {project?.visibility}
             </span>
@@ -480,21 +522,21 @@ export default function ProjectDetailPage() {
             </div>
             {tree.length === 0 ? (
               <div style={{
-                padding:   '24px',
+                padding: '24px',
                 textAlign: 'center',
-                color:     '#8b949e',
-                fontSize:  '13px',
+                color: '#6b7280',
+                fontSize: '13px',
               }}>
                 No files yet.
                 <br />
                 <button
                   style={{
-                    marginTop:  '8px',
-                    color:      '#58a6ff',
+                    marginTop: '8px',
+                    color: '#2563eb',
                     background: 'none',
-                    border:     'none',
-                    cursor:     'pointer',
-                    fontSize:   '13px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '13px',
                   }}
                   onClick={handleNewFile}
                 >
@@ -562,13 +604,13 @@ export default function ProjectDetailPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{
                     fontSize: '13px',
-                    color:    '#e6edf3',
+                    color: '#111827',
                   }}>
                     User #{m.userId}
                   </div>
                   <div style={{
                     fontSize: '11px',
-                    color:    '#8b949e',
+                    color: '#6b7280',
                   }}>
                     {m.role}
                   </div>

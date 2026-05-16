@@ -11,7 +11,7 @@ import { getUnreadCount } from '../api/notificationApi';
 const NotificationContext = createContext(null);
 
 export function NotificationProvider({ children }) {
-  const { userId, token }   = useAuth();
+  const { userId, token } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchCount = useCallback(async () => {

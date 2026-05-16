@@ -1,111 +1,148 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar      from '../components/layout/Navbar';
+import Navbar from '../components/layout/Navbar';
 import ProjectCard from '../components/project/ProjectCard';
-import Loader      from '../components/common/Loader';
+import Loader from '../components/common/Loader';
 import { useAuth } from '../context/AuthContext';
-import { getMyProjects }  from '../api/projectApi';
-import { getJobsByUser }  from '../api/executionApi';
+import { getMyProjects } from '../api/projectApi';
+import { getJobsByUser } from '../api/executionApi';
 
 const s = {
-  page:  { minHeight: '100vh', background: '#0d1117' },
+  page: {
+    minHeight: '100vh',
+    background:
+      'linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%)',
+  },
+
   body: {
     maxWidth: '1100px',
-    margin:   '0 auto',
-    padding:  '32px 20px',
+    margin: '0 auto',
+    padding: '36px 20px',
   },
+
   greeting: {
-    fontSize:     '26px',
-    fontWeight:   '700',
-    color:        '#e6edf3',
-    marginBottom: '4px',
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#111827',
+    marginBottom: '6px',
   },
+
   greetingSub: {
-    fontSize:     '14px',
-    color:        '#8b949e',
+    fontSize: '14px',
+    color: '#6b7280',
     marginBottom: '32px',
   },
+
   statsGrid: {
-    display:             'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap:                 '16px',
-    marginBottom:        '32px',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    gap: '16px',
+    marginBottom: '36px',
   },
+
   statCard: {
-    background:   '#161b22',
-    border:       '1px solid #21262d',
-    borderRadius: '10px',
-    padding:      '20px',
+    background: '#ffffff',
+    border: '1px solid #e5eaf5',
+    borderRadius: '16px',
+    padding: '22px',
+    boxShadow: '0 10px 30px rgba(15,23,42,0.06)',
   },
+
   statLabel: {
-    fontSize:        '12px',
-    color:           '#8b949e',
-    marginBottom:    '8px',
-    textTransform:   'uppercase',
-    letterSpacing:   '0.5px',
-  },
-  statValue: {
-    fontSize:   '28px',
-    fontWeight: '700',
-    color:      '#e6edf3',
-  },
-  section:       { marginBottom: '32px' },
-  sectionHeader: {
-    display:        'flex',
-    alignItems:     'center',
-    justifyContent: 'space-between',
-    marginBottom:   '16px',
-  },
-  sectionTitle: {
-    fontSize:   '16px',
+    fontSize: '12px',
+    color: '#6b7280',
+    marginBottom: '10px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
     fontWeight: '600',
-    color:      '#e6edf3',
   },
+
+  statValue: {
+    fontSize: '30px',
+    fontWeight: '800',
+    color: '#111827',
+  },
+
+  section: {
+    marginBottom: '36px',
+  },
+
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '18px',
+    gap: '12px',
+  },
+
+  sectionTitle: {
+    fontSize: '18px',
+    fontWeight: '700',
+    color: '#111827',
+  },
+
   seeAll: {
-    fontSize:   '13px',
-    color:      '#58a6ff',
-    cursor:     'pointer',
+    fontSize: '13px',
+    color: '#2563eb',
+    cursor: 'pointer',
     background: 'none',
-    border:     'none',
+    border: 'none',
+    fontWeight: '600',
   },
+
   grid: {
-    display:             'grid',
+    display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap:                 '16px',
+    gap: '18px',
   },
+
   emptyState: {
-    padding:      '48px',
-    textAlign:    'center',
-    background:   '#161b22',
-    border:       '1px dashed #30363d',
-    borderRadius: '10px',
-    color:        '#8b949e',
-    fontSize:     '14px',
+    padding: '54px 24px',
+    textAlign: 'center',
+    background: '#ffffff',
+    boxShadow: '0 10px 30px rgba(15,23,42,0.06)',
+    border: '1px dashed #cbd5e1',
+    borderRadius: '16px',
+    color: '#6b7280',
+    fontSize: '14px',
   },
+
   newBtn: {
-    padding:      '8px 16px',
-    background:   '#238636',
-    border:       '1px solid #2ea043',
-    borderRadius: '7px',
-    color:        '#fff',
-    fontSize:     '13px',
-    fontWeight:   '600',
-    cursor:       'pointer',
+    padding: '10px 18px',
+    background: 'linear-gradient(135deg, #2563eb, #4f46e5)',
+    border: 'none',
+    borderRadius: '10px',
+    color: '#ffffff',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    boxShadow: '0 10px 20px rgba(37,99,235,0.22)',
   },
+
+  jobBox: {
+    background: '#ffffff',
+    border: '1px solid #e5eaf5',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    boxShadow: '0 10px 30px rgba(15,23,42,0.06)',
+  },
+
   jobRow: {
-    padding:         '12px 16px',
-    display:         'flex',
-    alignItems:      'center',
-    gap:             '12px',
-    borderBottom:    '1px solid #21262d',
+    padding: '14px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    borderBottom: '1px solid #e5eaf5',
   },
+
   langTag: {
-    fontSize:     '12px',
-    fontFamily:   'JetBrains Mono, monospace',
-    color:        '#8b949e',
-    background:   '#0d1117',
-    padding:      '2px 8px',
-    borderRadius: '4px',
+    fontSize: '12px',
+    fontFamily: 'JetBrains Mono, monospace',
+    color: '#2563eb',
+    background: '#dbeafe',
+    padding: '4px 9px',
+    borderRadius: '6px',
+    fontWeight: '600',
   },
 };
 
@@ -117,10 +154,11 @@ function greeting() {
 }
 
 export default function Dashboard() {
-  const { user, userId }      = useAuth();
-  const navigate              = useNavigate();
-  const [myProjects, setMy]   = useState([]);
-  const [jobs, setJobs]       = useState([]);
+  const { user, userId } = useAuth();
+  const navigate = useNavigate();
+
+  const [myProjects, setMy] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -130,7 +168,8 @@ export default function Dashboard() {
           getMyProjects(userId),
           getJobsByUser(userId),
         ]);
-        setMy(pRes.data.data   || []);
+
+        setMy(pRes.data.data || []);
         setJobs(jRes.data.data || []);
       } catch {
         /* silent */
@@ -138,7 +177,8 @@ export default function Dashboard() {
         setLoading(false);
       }
     }
-    load();
+
+    if (userId) load();
   }, [userId]);
 
   const completed =
@@ -147,62 +187,85 @@ export default function Dashboard() {
   return (
     <div style={s.page}>
       <Navbar />
-      <div style={s.body}>
 
+      <div style={s.body}>
         <div style={s.greeting}>
           {greeting()},{' '}
-          {user?.fullName?.split(' ')[0] || 'Developer'} 👋
+          {user?.fullName?.split(' ')[0] ||
+            user?.username ||
+            'Developer'}{' '}
+          👋
         </div>
+
         <div style={s.greetingSub}>
           Here's what's happening today.
         </div>
 
-        {/* Stats */}
         <div style={s.statsGrid}>
           {[
             {
               label: 'My Projects',
               value: myProjects.length,
-              blue:  true,
+              blue: true,
             },
-            { label: 'Total Runs',  value: jobs.length },
-            { label: 'Successful',  value: completed },
+            {
+              label: 'Total Runs',
+              value: jobs.length,
+            },
+            {
+              label: 'Successful',
+              value: completed,
+            },
             {
               label: 'Member Since',
               value: user?.createdAt
-                ? new Date(user.createdAt)
-                    .toLocaleDateString('en', {
+                ? new Date(user.createdAt).toLocaleDateString(
+                    'en',
+                    {
                       month: 'short',
-                      year:  'numeric',
-                    })
+                      year: 'numeric',
+                    }
+                  )
                 : '—',
             },
-          ].map((s2) => (
-            <div key={s2.label} style={s.statCard}>
-              <div style={s.statLabel}>{s2.label}</div>
-              <div style={{
-                ...s.statValue,
-                color: s2.blue ? '#58a6ff' : '#e6edf3',
-              }}>
-                {s2.value}
+          ].map((item) => (
+            <div key={item.label} style={s.statCard}>
+              <div style={s.statLabel}>
+                {item.label}
+              </div>
+
+              <div
+                style={{
+                  ...s.statValue,
+                  color: item.blue ? '#2563eb' : '#111827',
+                }}
+              >
+                {item.value}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Projects */}
         <div style={s.section}>
           <div style={s.sectionHeader}>
             <span style={s.sectionTitle}>
               My Projects
             </span>
-            <div style={{ display: 'flex', gap: '10px' }}>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                alignItems: 'center',
+              }}
+            >
               <button
                 style={s.newBtn}
                 onClick={() => navigate('/projects')}
               >
                 + New Project
               </button>
+
               <button
                 style={s.seeAll}
                 onClick={() => navigate('/projects')}
@@ -212,18 +275,26 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {loading ? <Loader /> :
-            myProjects.length === 0 ? (
+          {loading ? (
+            <Loader />
+          ) : myProjects.length === 0 ? (
             <div style={s.emptyState}>
-              <div style={{
-                fontSize: '32px', marginBottom: '12px'
-              }}>
+              <div
+                style={{
+                  fontSize: '38px',
+                  marginBottom: '14px',
+                }}
+              >
                 📁
               </div>
-              No projects yet.
-              <br />
+
+              <div>No projects yet.</div>
+
               <button
-                style={{ ...s.newBtn, marginTop: '16px' }}
+                style={{
+                  ...s.newBtn,
+                  marginTop: '18px',
+                }}
                 onClick={() => navigate('/projects')}
               >
                 Create your first project
@@ -231,12 +302,12 @@ export default function Dashboard() {
             </div>
           ) : (
             <div style={s.grid}>
-              {myProjects.slice(0, 6).map((p) => (
+              {myProjects.slice(0, 6).map((project) => (
                 <ProjectCard
-                  key={p.projectId}
-                  project={p}
+                  key={project.projectId}
+                  project={project}
                   onClick={() =>
-                    navigate(`/projects/${p.projectId}`)
+                    navigate(`/projects/${project.projectId}`)
                   }
                 />
               ))}
@@ -244,7 +315,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Recent executions */}
         {jobs.length > 0 && (
           <div style={s.section}>
             <div style={s.sectionHeader}>
@@ -252,52 +322,60 @@ export default function Dashboard() {
                 Recent Executions
               </span>
             </div>
-            <div style={{
-              background:   '#161b22',
-              border:       '1px solid #21262d',
-              borderRadius: '10px',
-              overflow:     'hidden',
-            }}>
-              {jobs.slice(0, 5).map((job, i) => (
+
+            <div style={s.jobBox}>
+              {jobs.slice(0, 5).map((job, index) => (
                 <div
                   key={job.jobId}
                   style={{
                     ...s.jobRow,
-                    borderBottom: i < 4
-                      ? '1px solid #21262d' : 'none',
+                    borderBottom:
+                      index < 4
+                        ? '1px solid #e5eaf5'
+                        : 'none',
                   }}
                 >
                   <span style={s.langTag}>
                     {job.language}
                   </span>
-                  <span style={{
-                    flex:           1,
-                    fontSize:       '13px',
-                    color:          '#8b949e',
-                    fontFamily:     'JetBrains Mono, monospace',
-                    overflow:       'hidden',
-                    textOverflow:   'ellipsis',
-                    whiteSpace:     'nowrap',
-                  }}>
+
+                  <span
+                    style={{
+                      flex: 1,
+                      fontSize: '13px',
+                      color: '#4b5563',
+                      fontFamily:
+                        'JetBrains Mono, monospace',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {job.sourceCode?.slice(0, 60)}...
                   </span>
-                  <span style={{
-                    fontSize:   '12px',
-                    fontWeight: '600',
-                    color:
-                      job.status === 'COMPLETED'
-                        ? '#3fb950'
-                        : job.status === 'FAILED'
-                        ? '#f85149'
-                        : '#d29922',
-                  }}>
+
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      color:
+                        job.status === 'COMPLETED'
+                          ? '#16a34a'
+                          : job.status === 'FAILED'
+                            ? '#dc2626'
+                            : '#d97706',
+                    }}
+                  >
                     {job.status}
                   </span>
+
                   {job.executionTimeMs && (
-                    <span style={{
-                      fontSize: '12px',
-                      color:    '#484f58',
-                    }}>
+                    <span
+                      style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                      }}
+                    >
                       {job.executionTimeMs}ms
                     </span>
                   )}

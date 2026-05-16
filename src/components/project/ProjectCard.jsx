@@ -17,57 +17,67 @@ const LANG_COLORS = {
 
 const s = {
   card: {
-    background:   '#161b22',
-    border:       '1px solid #21262d',
-    borderRadius: '10px',
-    padding:      '18px',
-    cursor:       'pointer',
-    transition:   'border-color 0.15s, transform 0.1s',
+    background: '#ffffff',
+    border: '1px solid #e5eaf5',
+    borderRadius: '14px',
+    padding: '18px',
+    cursor: 'pointer',
+    transition: 'all 0.18s ease',
+    boxShadow: '0 10px 28px rgba(15,23,42,0.06)',
   },
+
   header: {
-    display:         'flex',
-    alignItems:      'flex-start',
-    justifyContent:  'space-between',
-    marginBottom:    '8px',
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: '10px',
+    gap: '10px',
   },
+
   name: {
-    fontSize:     '15px',
-    fontWeight:   '600',
-    color:        '#58a6ff',
+    fontSize: '16px',
+    fontWeight: '700',
+    color: '#2563eb',
     marginBottom: '4px',
   },
+
   badge: {
-    fontSize:     '11px',
-    padding:      '2px 7px',
-    borderRadius: '10px',
-    fontWeight:   '500',
+    fontSize: '11px',
+    padding: '4px 8px',
+    borderRadius: '999px',
+    fontWeight: '600',
   },
+
   desc: {
-    fontSize:           '13px',
-    color:              '#8b949e',
-    lineHeight:         '1.5',
-    marginBottom:       '14px',
-    height:             '40px',
-    overflow:           'hidden',
-    display:            '-webkit-box',
-    WebkitLineClamp:    2,
-    WebkitBoxOrient:    'vertical',
+    fontSize: '13px',
+    color: '#6b7280',
+    lineHeight: '1.5',
+    marginBottom: '16px',
+    height: '40px',
+    overflow: 'hidden',
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
   },
+
   footer: {
-    display:    'flex',
+    display: 'flex',
     alignItems: 'center',
-    gap:        '12px',
-    flexWrap:   'wrap',
+    gap: '12px',
+    flexWrap: 'wrap',
   },
+
   langDot: {
-    width:        '10px',
-    height:       '10px',
+    width: '10px',
+    height: '10px',
     borderRadius: '50%',
-    flexShrink:   0,
+    flexShrink: 0,
   },
+
   meta: {
     fontSize: '12px',
-    color:    '#8b949e',
+    color: '#6b7280',
+    fontWeight: '500',
   },
 };
 
@@ -82,9 +92,12 @@ export default function ProjectCard({ project, onClick }) {
       style={{
         ...s.card,
         borderColor: hovered
-          ? '#58a6ff44' : '#21262d',
+          ? '#2563eb55' : '#e5eaf5',
         transform: hovered
-          ? 'translateY(-1px)' : 'none',
+          ? 'translateY(-3px)' : 'none',
+        boxShadow: hovered
+         ? '0 18px 36px rgba(37,99,235,0.12)'
+         : s.card.boxShadow,
       }}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
@@ -96,10 +109,10 @@ export default function ProjectCard({ project, onClick }) {
           ...s.badge,
           background:
             project.visibility === 'PUBLIC'
-              ? '#1f6feb33' : '#30363d',
+              ? '#dbeafe' : '#f3f4f6',
           color:
             project.visibility === 'PUBLIC'
-              ? '#58a6ff' : '#8b949e',
+              ? '#2563eb' : '#4b5563',
         }}>
           {project.visibility === 'PUBLIC'
             ? '🌐 Public' : '🔒 Private'}

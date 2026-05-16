@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
-import LoginForm  from '../components/auth/LoginForm';
+import LoginForm from '../components/auth/LoginForm';
 import SignupForm from '../components/auth/SignupForm';
 
 const QUOTES = [
   {
-    text:   "Code is like humor. When you have to explain it, it's bad.",
+    text: "Code is like humor. When you have to explain it, it's bad.",
     author: 'Cory House',
   },
   {
-    text:   'First, solve the problem. Then, write the code.',
+    text: 'First, solve the problem. Then, write the code.',
     author: 'John Johnson',
   },
   {
-    text:   'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    text: 'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
     author: 'Martin Fowler',
   },
   {
-    text:   'The best error message is the one that never shows up.',
+    text: 'The best error message is the one that never shows up.',
     author: 'Thomas Fuchs',
   },
   {
-    text:   'Simplicity is the soul of efficiency.',
+    text: 'Simplicity is the soul of efficiency.',
     author: 'Austin Freeman',
   },
 ];
@@ -38,141 +38,159 @@ const FEATURES = [
 
 const s = {
   page: {
-    minHeight:  '100vh',
-    background: '#0d1117',
-    display:    'flex',
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #f8fbff, #eef4ff)',
+    display: 'grid',
+    gridTemplateColumns: '1fr 480px',
+    alignItems: 'center',
+    padding: '40px',
+    gap: '40px',
   },
 
-  /* ── Left panel ─────────────────────────────────────── */
   left: {
-    flex:            1,
-    display:         'flex',
-    flexDirection:   'column',
-    justifyContent:  'space-between',
-    padding:         '60px',
-    borderRight:     '1px solid #21262d',
-  },
-  logo: {
-    display:     'flex',
-    alignItems:  'center',
-    gap:         '12px',
-  },
-  logoIcon: {
-    width:          '40px',
-    height:         '40px',
-    background:
-      'linear-gradient(135deg, #58a6ff, #bc8cff)',
-    borderRadius:   '10px',
-    display:        'flex',
-    alignItems:     'center',
-    justifyContent: 'center',
-    fontSize:       '20px',
-  },
-  logoName: {
-    fontSize:      '22px',
-    fontWeight:    '700',
-    color:         '#e6edf3',
-    letterSpacing: '-0.5px',
-  },
-  logoSub: {
-    fontSize:  '12px',
-    color:     '#8b949e',
-    marginTop: '2px',
-  },
-  centerBlock: {
-    flex:            1,
-    display:         'flex',
-    flexDirection:   'column',
-    justifyContent:  'center',
-  },
-  tagline: {
-    fontSize:      '48px',
-    fontWeight:    '700',
-    color:         '#e6edf3',
-    lineHeight:    '1.15',
-    letterSpacing: '-1.5px',
-    marginBottom:  '20px',
-  },
-  taglineAccent: {
-    background:
-      'linear-gradient(135deg, #58a6ff, #bc8cff)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor:  'transparent',
-    backgroundClip:       'text',
-  },
-  taglineSub: {
-    fontSize:    '16px',
-    color:       '#8b949e',
-    lineHeight:  '1.6',
-    maxWidth:    '420px',
-    marginBottom:'32px',
-  },
-  featureList: {
-    display:       'flex',
+    minHeight: 'calc(100vh - 80px)',
+    display: 'flex',
     flexDirection: 'column',
-    gap:           '14px',
+    justifyContent: 'space-between',
+    padding: '48px',
+    background: '#ffffffcc',
+    borderRadius: '28px',
+    border: '1px solid #e5eaf5',
+    boxShadow: '0 20px 50px rgba(37, 99, 235, 0.08)',
   },
+
+  right: {
+    width: '100%',
+    maxWidth: '480px',
+    padding: '36px',
+    background: 'rgba(255,255,255,0.75)',
+    backdropFilter: 'blur(14px)',
+    borderRadius: '28px',
+    border: '1px solid #e5eaf5',
+    boxShadow: '0 20px 50px rgba(15, 23, 42, 0.10)',
+  },
+
+  logoName: {
+    fontSize: '22px',
+    fontWeight: '700',
+    color: '#111827',
+  },
+
+  logoSub: {
+    fontSize: '12px',
+    color: '#6b7280',
+  },
+
+  tagline: {
+    fontSize: 'clamp(42px, 5vw, 74px)',
+    fontWeight: '800',
+    color: '#111827',
+    lineHeight: '1.12',
+    letterSpacing: '-1.5px',
+    marginBottom: '22px',
+  },
+
+  taglineSub: {
+    fontSize: '17px',
+    color: '#4b5563',
+    lineHeight: '1.7',
+    maxWidth: '520px',
+    marginBottom: '32px',
+  },
+
   featureItem: {
-    display:    'flex',
+    display: 'flex',
     alignItems: 'center',
-    gap:        '12px',
-    color:      '#8b949e',
-    fontSize:   '14px',
+    gap: '12px',
+    color: '#374151',
+    fontSize: '15px',
   },
-  featureDot: {
-    width:        '6px',
-    height:       '6px',
-    borderRadius: '50%',
-    background:   '#58a6ff',
-    flexShrink:   0,
-  },
-  quoteBlock: {
-    borderLeft:  '3px solid #21262d',
-    paddingLeft: '20px',
-  },
+
   quoteText: {
-    fontSize:     '14px',
-    color:        '#8b949e',
-    fontStyle:    'italic',
-    lineHeight:   '1.6',
+    fontSize: '14px',
+    color: '#4b5563',
+    fontStyle: 'italic',
+    lineHeight: '1.6',
     marginBottom: '8px',
   },
+
   quoteAuthor: {
     fontSize: '12px',
-    color:    '#484f58',
+    color: '#6b7280',
   },
 
-  /* ── Right panel ────────────────────────────────────── */
-  right: {
-    width:           '480px',
-    display:         'flex',
-    flexDirection:   'column',
-    justifyContent:  'center',
-    padding:         '60px 48px',
-  },
   tabs: {
-    display:      'flex',
+    display: 'flex',
     marginBottom: '36px',
-    background:   '#161b22',
-    borderRadius: '10px',
-    padding:      '4px',
-    border:       '1px solid #21262d',
+    background: '#eef2ff',
+    borderRadius: '14px',
+    padding: '5px',
+    border: '1px solid #dbe3f0',
+  },
+
+  tabActive: {
+    background: '#ffffff',
+    color: '#2563eb',
+    boxShadow: '0 6px 16px rgba(37, 99, 235, 0.12)',
   },
   tab: {
-    flex:         1,
-    padding:      '10px',
-    border:       'none',
-    borderRadius: '7px',
-    background:   'transparent',
-    color:        '#8b949e',
-    fontSize:     '14px',
-    fontWeight:   '500',
-    cursor:       'pointer',
-    transition:   'all 0.2s',
+    flex: 1,
+    padding: '14px',
+    border: 'none',
+    borderRadius: '10px',
+    background: 'transparent',
+    color: '#64748b',
+    fontSize: '15px',
+    fontWeight: '600',
+    transition: '0.2s ease',
   },
-  tabActive: {
-    background: '#21262d',
-    color:      '#e6edf3',
+
+  logo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '14px',
+  },
+
+  logoIcon: {
+    width: '54px',
+    height: '54px',
+    borderRadius: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '24px',
+    background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+    color: '#fff',
+    boxShadow: '0 10px 25px rgba(37,99,235,0.25)',
+  },
+
+  centerBlock: {
+    maxWidth: '620px',
+  },
+
+  taglineAccent: {
+    background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+  },
+
+  featureList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '18px',
+  },
+
+  featureDot: {
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    background: '#2563eb',
+    flexShrink: 0,
+  },
+
+  quoteBlock: {
+    borderLeft: '3px solid #dbeafe',
+    paddingLeft: '18px',
   },
 };
 
@@ -236,8 +254,8 @@ export default function AuthPage() {
         {/* Tabs */}
         <div style={s.tabs}>
           {[
-            { key: 'login',  label: 'Sign In'  },
-            { key: 'signup', label: 'Sign Up'  },
+            { key: 'login', label: 'Sign In' },
+            { key: 'signup', label: 'Sign Up' },
           ].map((t) => (
             <button
               key={t.key}
@@ -255,11 +273,11 @@ export default function AuthPage() {
         {/* Form */}
         {tab === 'login'
           ? <LoginForm
-              onSwitch={() => setTab('signup')}
-            />
+            onSwitch={() => setTab('signup')}
+          />
           : <SignupForm
-              onSwitch={() => setTab('login')}
-            />
+            onSwitch={() => setTab('login')}
+          />
         }
       </div>
     </div>

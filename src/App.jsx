@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  BrowserRouter,
   Routes,
   Route,
   Navigate,
@@ -10,15 +9,18 @@ import { AuthProvider, useAuth }
   from './context/AuthContext';
 import { NotificationProvider }
   from './context/NotificationContext';
-import OAuth2SuccessPage from './pages/OAuth2SuccessPage';
+import OAuth2SuccessPage
+  from './pages/OAuth2SuccessPage';
 
 import AuthPage          from './pages/AuthPage';
 import Dashboard         from './pages/Dashboard';
 import ProjectsPage      from './pages/ProjectsPage';
-import ProjectDetailPage from './pages/ProjectDetailPage';
+import ProjectDetailPage
+  from './pages/ProjectDetailPage';
 import EditorPage        from './pages/EditorPage';
 import CollabPage        from './pages/CollabPage';
-import NotificationsPage from './pages/NotificationsPage';
+import NotificationsPage
+  from './pages/NotificationsPage';
 import ProfilePage       from './pages/ProfilePage';
 
 function PrivateRoute({ children }) {
@@ -33,6 +35,7 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* Public */}
       <Route
         path="/auth"
         element={
@@ -41,6 +44,14 @@ function AppRoutes() {
             : <AuthPage />
         }
       />
+
+      {/* OAuth2 callback — must be public */}
+      <Route
+        path="/oauth2/success"
+        element={<OAuth2SuccessPage />}
+      />
+
+      {/* Protected */}
       <Route
         path="/dashboard"
         element={
@@ -87,7 +98,8 @@ function AppRoutes() {
           <PrivateRoute><ProfilePage /></PrivateRoute>
         }
       />
-      <Route path="/oauth2/success" element={<OAuth2SuccessPage />} />
+
+      {/* Default */}
       <Route
         path="*"
         element={
@@ -103,19 +115,18 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
       <AuthProvider>
         <NotificationProvider>
           <Toaster
             position="top-right"
             toastOptions={{
               style: {
-                background:  '#161b22',
-                color:       '#e6edf3',
-                border:      '1px solid #30363d',
-                borderRadius:'8px',
-                fontFamily:  'Inter, sans-serif',
-                fontSize:    '14px',
+                background:   '#161b22',
+                color:        '#e6edf3',
+                border:       '1px solid #30363d',
+                borderRadius: '8px',
+                fontFamily:   'Inter, sans-serif',
+                fontSize:     '14px',
               },
               success: {
                 iconTheme: {
@@ -134,6 +145,5 @@ export default function App() {
           <AppRoutes />
         </NotificationProvider>
       </AuthProvider>
-    </BrowserRouter>
   );
 }

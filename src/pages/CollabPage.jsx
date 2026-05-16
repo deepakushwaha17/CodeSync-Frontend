@@ -7,9 +7,9 @@ import { useParams, useNavigate }
 import Editor from '@monaco-editor/react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import toast   from 'react-hot-toast';
-import Navbar  from '../components/layout/Navbar';
-import Loader  from '../components/common/Loader';
+import toast from 'react-hot-toast'; 
+import Navbar from '../components/layout/Navbar';
+import Loader from '../components/common/Loader';
 import { useAuth } from '../context/AuthContext';
 import {
   getSession,
@@ -27,123 +27,146 @@ const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8087/ws';
 
 const s = {
   page: {
-    height:        '100vh',
-    display:       'flex',
+    height: '100vh',
+    display: 'flex',
     flexDirection: 'column',
-    background:    '#0d1117',
-    overflow:      'hidden',
-  },
-  body: {
-    flex:     1,
-    display:  'flex',
+    background:
+      'linear-gradient(135deg,#f8fbff,#eef4ff)',
     overflow: 'hidden',
   },
-  sidebar: {
-    width:         '200px',
-    background:    '#161b22',
-    borderRight:   '1px solid #21262d',
-    display:       'flex',
-    flexDirection: 'column',
+
+  body: {
+    flex: 1,
+    display: 'flex',
+    overflow: 'hidden',
   },
+
+  sidebar: {
+    width: '230px',
+    background: 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(12px)',
+    borderRight: '1px solid #e5eaf5',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '0 10px 30px rgba(15,23,42,0.05)',
+  },
+
   sidebarHdr: {
-    padding:        '10px 12px',
-    borderBottom:   '1px solid #21262d',
-    fontSize:       '11px',
-    color:          '#8b949e',
-    fontWeight:     '600',
-    textTransform:  'uppercase',
-    letterSpacing:  '0.5px',
-    display:        'flex',
-    alignItems:     'center',
+    padding: '14px 16px',
+    borderBottom: '1px solid #e5eaf5',
+    fontSize: '11px',
+    color: '#6b7280',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
+
   liveDot: {
-    width:        '7px',
-    height:       '7px',
+    width: '8px',
+    height: '8px',
     borderRadius: '50%',
-    background:   '#3fb950',
-    animation:    'pulse 1.5s infinite',
+    background: '#16a34a',
+    animation: 'pulse 1.5s infinite',
   },
+
   participantItem: {
-    padding:     '10px 12px',
-    display:     'flex',
-    alignItems:  'center',
-    gap:         '8px',
-    fontSize:    '13px',
-    color:       '#e6edf3',
-    borderBottom:'1px solid #21262d',
+    padding: '12px 14px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    fontSize: '13px',
+    color: '#111827',
+    borderBottom: '1px solid #eef2ff',
+    transition: 'background 0.15s ease',
   },
+
   avatar: {
-    width:          '28px',
-    height:         '28px',
-    borderRadius:   '50%',
-    display:        'flex',
-    alignItems:     'center',
+    width: '34px',
+    height: '34px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'center',
-    fontSize:       '11px',
-    fontWeight:     '700',
-    color:          '#fff',
-    flexShrink:     0,
+    fontSize: '12px',
+    fontWeight: '700',
+    color: '#fff',
+    flexShrink: 0,
+    boxShadow: '0 6px 14px rgba(15,23,42,0.12)',
   },
+
   editorArea: {
-    flex:          1,
-    display:       'flex',
+    flex: 1,
+    display: 'flex',
     flexDirection: 'column',
-    overflow:      'hidden',
+    overflow: 'hidden',
   },
+
   toolbar: {
-    padding:      '8px 12px',
-    background:   '#161b22',
-    borderBottom: '1px solid #21262d',
-    display:      'flex',
-    alignItems:   'center',
-    gap:          '8px',
+    padding: '12px 16px',
+    background: 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(12px)',
+    borderBottom: '1px solid #e5eaf5',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    boxShadow: '0 10px 30px rgba(15,23,42,0.04)',
   },
+
   info: {
-    flex:        1,
-    fontSize:    '12px',
-    color:       '#8b949e',
-    fontFamily:  'JetBrains Mono, monospace',
-    overflow:    'hidden',
-    textOverflow:'ellipsis',
-    whiteSpace:  'nowrap',
+    flex: 1,
+    fontSize: '12px',
+    color: '#6b7280',
+    fontFamily: 'JetBrains Mono, monospace',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
+
   btn: {
-    padding:      '5px 12px',
-    borderRadius: '6px',
-    border:       '1px solid #30363d',
-    background:   '#21262d',
-    color:        '#e6edf3',
-    fontSize:     '12px',
-    cursor:       'pointer',
+    padding: '8px 14px',
+    borderRadius: '10px',
+    border: '1px solid #dbe3f0',
+    background: '#ffffff',
+    color: '#111827',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
   },
+
   dangerBtn: {
-    borderColor: '#f85149',
-    color:       '#f85149',
-    background:  'none',
+    borderColor: '#fecaca',
+    background: '#fef2f2',
+    color: '#dc2626',
   },
+
   kickBtn: {
-    background:   'none',
-    border:       'none',
-    color:        '#f85149',
-    cursor:       'pointer',
-    fontSize:     '12px',
-    padding:      '2px 4px',
+    background: '#fef2f2',
+    border: '1px solid #fecaca',
+    color: '#dc2626',
+    cursor: 'pointer',
+    fontSize: '11px',
+    padding: '4px 7px',
+    borderRadius: '6px',
+    transition: 'all 0.2s ease',
   },
 };
 
 export default function CollabPage() {
-  const { sessionId }    = useParams();
-  const navigate         = useNavigate();
-  const { userId }       = useAuth();
-  const [session, setSess]     = useState(null);
-  const [file, setFile]        = useState(null);
-  const [content, setContent]  = useState('');
-  const [parts, setParts]      = useState([]);
-  const [connected, setConn]   = useState(false);
-  const [loading, setLoading]  = useState(true);
-  const stompRef               = useRef(null);
-  const remoteRef              = useRef(false);
+  const { sessionId } = useParams();
+  const navigate = useNavigate();
+  const { userId } = useAuth();
+  const [session, setSess] = useState(null);
+  const [file, setFile] = useState(null);
+  const [content, setContent] = useState('');
+  const [parts, setParts] = useState([]);
+  const [connected, setConn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const stompRef = useRef(null);
+  const remoteRef = useRef(false);
 
   useEffect(() => {
     async function load() {
@@ -173,7 +196,7 @@ export default function CollabPage() {
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () => new SockJS(WS_URL),
-      reconnectDelay:   3000,
+      reconnectDelay: 3000,
       onConnect: () => {
         setConn(true);
         toast.success('Connected to session!');
@@ -220,8 +243,8 @@ export default function CollabPage() {
           `/app/session/${sessionId}/change`,
         body: JSON.stringify({
           sessionId,
-          userId:    Number(userId),
-          content:   val || '',
+          userId: Number(userId),
+          content: val || '',
           operation: 'REPLACE',
         }),
       });
@@ -236,8 +259,8 @@ export default function CollabPage() {
       body: JSON.stringify({
         sessionId,
         userId: Number(userId),
-        line:   e.position.lineNumber,
-        col:    e.position.column,
+        line: e.position.lineNumber,
+        col: e.position.column,
       }),
     });
   }, [sessionId, userId]);
@@ -324,15 +347,21 @@ export default function CollabPage() {
               </div>
               {isOwner
                 && String(p.userId)
-                   !== String(userId) && (
-                <button
-                  style={s.kickBtn}
-                  onClick={() => handleKick(p.userId)}
-                  title="Kick"
-                >
-                  ✕
-                </button>
-              )}
+                !== String(userId) && (
+                  <button
+                    style={s.kickBtn}
+                    onClick={() => handleKick(p.userId)}
+                    title="Kick"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#fee2e2';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#fef2f2';
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
             </div>
           ))}
         </div>
@@ -345,16 +374,36 @@ export default function CollabPage() {
               {sessionId.slice(0, 8)}…
               {' '}| {file?.name}
             </span>
-            <button
-              style={s.btn}
-              onClick={handleLeave}
-            >
-              Leave
-            </button>
+              <button
+                style={s.btn}
+                onClick={handleLeave}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform =
+                    'translateY(-1px)';
+                  e.currentTarget.style.boxShadow =
+                    '0 10px 20px rgba(15,23,42,0.08)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                Leave
+              </button>
             {isOwner && (
               <button
                 style={{ ...s.btn, ...s.dangerBtn }}
                 onClick={handleEnd}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform =
+                    'translateY(-1px)';
+                  e.currentTarget.style.boxShadow =
+                    '0 10px 20px rgba(220,38,38,0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               >
                 End Session
               </button>
@@ -373,16 +422,16 @@ export default function CollabPage() {
                 handleCursorMove
               );
             }}
-            theme="vs-dark"
+            theme="vs"
             options={{
-              fontSize:            14,
+              fontSize: 14,
               fontFamily:
                 'JetBrains Mono, monospace',
-              minimap:             { enabled: false },
-              scrollBeyondLastLine:false,
-              automaticLayout:     true,
-              tabSize:             2,
-              wordWrap:            'on',
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              tabSize: 2,
+              wordWrap: 'on',
             }}
           />
         </div>

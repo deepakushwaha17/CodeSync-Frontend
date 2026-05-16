@@ -20,6 +20,10 @@ export function AuthProvider({ children }) {
   );
 
   const loginUser = (data) => {
+
+    const token = data.accessToken || localStorage.getItem('token');
+    const userData = data.user;
+
     localStorage.setItem('token',
       data.accessToken);
     localStorage.setItem('userId',
