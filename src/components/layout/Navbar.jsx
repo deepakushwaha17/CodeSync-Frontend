@@ -182,17 +182,24 @@ const s = {
   },
 };
 
-const NAV_LINKS = [
+const DEV_LINKS = [
   { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Projects',  path: '/projects'  },
+  { label: 'Projects', path: '/projects' },
+];
+
+const ADMIN_LINKS = [
+  { label: 'Admin Panel', path: '/admin/dashboard' },
 ];
 
 export default function Navbar() {
-  const navigate             = useNavigate();
-  const location             = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, logoutUser } = useAuth();
-  const { unreadCount }      = useNotification();
-  const [open, setOpen]      = useState(false);
+  const { unreadCount } = useNotification();
+  const [open, setOpen] = useState(false);
+
+  const links = user?.role === 'ADMIN'
+    ? ADMIN_LINKS : DEV_LINKS;
 
   const initials =
     user?.fullName
@@ -220,7 +227,7 @@ export default function Navbar() {
       </div>
 
       {/* Nav links */}
-      {NAV_LINKS.map((link) => (
+      {links.map((link) => (
         <button
           key={link.path}
           style={{

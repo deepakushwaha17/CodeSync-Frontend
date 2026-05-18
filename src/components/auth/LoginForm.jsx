@@ -146,7 +146,13 @@ export default function LoginForm({ onSwitch }) {
       loginUser(res.data.data);
 
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      const loggedInUser = res.data.data.user;
+
+      if (loggedInUser?.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       toast.error(
         err.response?.data?.message || 'Login failed.'

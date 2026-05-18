@@ -12,11 +12,16 @@ import {
   getMembers,
   addMember,
   deleteProject,
+  updateProject,
+  archiveProject,
+  removeMember,
 } from '../api/projectApi';
 import {
   getFileTree,
   createFile,
   createFolder,
+  renameFile,
+  deleteFile,
 } from '../api/fileApi';
 
 const FILE_ICONS = {
@@ -228,7 +233,13 @@ const s = {
   },
 };
 
-function FileTree({ nodes, depth = 0, onFileClick }) {
+function FileTree({
+  nodes,
+  depth = 0,
+  onFileClick,
+  onRename,
+  onDelete,
+}) {
   const [open, setOpen] = useState({});
 
   return (
@@ -239,14 +250,13 @@ function FileTree({ nodes, depth = 0, onFileClick }) {
             style={{
               ...s.fileItem,
               paddingLeft: `${16 + depth * 14}px`,
+              justifyContent: 'space-between',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background =
-                '#eef4ff';
+              e.currentTarget.style.background = '#eef4ff';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background =
-                'transparent';
+              e.currentTarget.style.background = 'transparent';
             }}
             onClick={() => {
               if (node.fileType === 'FOLDER') {
@@ -259,12 +269,43 @@ function FileTree({ nodes, depth = 0, onFileClick }) {
               }
             }}
           >
-            <span>
-              {node.fileType === 'FOLDER'
-                ? (open[node.fileId] ? '📂' : '📁')
-                : fileIcon(node)}
+            <span style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              flex: 1,
+            }}>
+              <span>
+                {node.fileType === 'FOLDER'
+                  ? (open[node.fileId] ? '📂' : '📁')
+                  : fileIcon(node)}
+              </span>
+              {node.name}
             </span>
-            {node.name}
+
+            <span style={{ display: 'flex', gap: '5px' }}>
+              <button
+                style={s.iconBtn}
+                title="Rename"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRename(node);
+                }}
+              >
+                ✏️
+              </button>
+
+              <button
+                style={s.iconBtn}
+                title="Delete"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(node);
+                }}
+              >
+                🗑
+              </button>
+            </span>
           </div>
 
           {node.fileType === 'FOLDER'
@@ -274,6 +315,8 @@ function FileTree({ nodes, depth = 0, onFileClick }) {
                 nodes={node.children}
                 depth={depth + 1}
                 onFileClick={onFileClick}
+                onRename={onRename}
+                onDelete={onDelete}
               />
             )}
         </React.Fragment>
@@ -383,6 +426,50 @@ export default function ProjectDetailPage() {
     }
   };
 
+  const refreshProject = async () => {
+    const [pRes, mRes] = await Promise.all([
+      getProjectById(projectId),
+      getMembers(projectId),
+    ]);
+
+    setPr(pRes.data.data);
+    setMem(mRes.data.data || []);
+  };
+
+  const refreshTree = async () => {
+    const tRes = await getFileTree(projectId);
+    setTree(tRes.data.data || []);
+  };
+
+  const handleRenameFile = async (node) => {
+    const newName = prompt('Enter new name:', node.name);
+    if (!newName || newName === node.name) return;
+
+    try {
+      await renameFile(node.fileId, newName);
+      toast.success('Renamed successfully!');
+      await refreshTree();
+    } catch {
+      toast.error('Failed to rename.');
+    }
+  };
+
+  const handleDeleteFile = async (node) => {
+    const ok = window.confirm(
+      `Delete ${node.name}?`
+    );
+
+    if (!ok) return;
+
+    try {
+      await deleteFile(node.fileId);
+      toast.success('Deleted successfully!');
+      await refreshTree();
+    } catch {
+      toast.error('Failed to delete.');
+    }
+  };
+
   const handleDelete = async () => {
     if (!window.confirm(
       'Delete this project? This cannot be undone.'
@@ -410,6 +497,63 @@ export default function ProjectDetailPage() {
       setMem(mRes.data.data || []);
     } catch {
       toast.error('Failed to add member.');
+    }
+  };
+  const handleUpdateProject = async () => {
+    const name = prompt('Project name:', project?.name || '');
+    if (!name) return;
+
+    const description = prompt(
+      'Description:',
+      project?.description || ''
+    );
+
+    const language = prompt(
+      'Language:',
+      project?.language || ''
+    );
+
+    const visibility = prompt(
+      'Visibility PUBLIC or PRIVATE:',
+      project?.visibility || 'PRIVATE'
+    );
+
+    try {
+      const res = await updateProject(projectId, {
+        name,
+        description,
+        language,
+        visibility: visibility?.toUpperCase() === 'PUBLIC'
+          ? 'PUBLIC'
+          : 'PRIVATE',
+      });
+
+      setPr(res.data.data);
+      toast.success('Project updated!');
+    } catch {
+      toast.error('Failed to update project.');
+    }
+  };
+  const handleArchiveProject = async () => {
+    if (!window.confirm('Archive this project?')) return;
+
+    try {
+      await archiveProject(projectId);
+      toast.success('Project archived!');
+      navigate('/projects');
+    } catch {
+      toast.error('Failed to archive project.');
+    }
+  };
+  const handleRemoveMember = async (memberUserId) => {
+    if (!window.confirm(`Remove user #${memberUserId}?`)) return;
+
+    try {
+      await removeMember(projectId, memberUserId);
+      await refreshProject();
+      toast.success('Member removed!');
+    } catch {
+      toast.error('Failed to remove member.');
     }
   };
 
@@ -486,13 +630,29 @@ export default function ProjectDetailPage() {
               🍴 Fork
             </button>
             {isOwner && (
+            <>
+              <button
+                style={s.btn}
+                onClick={handleUpdateProject}
+              >
+                ✏️ Edit Project
+              </button>
+
+              <button
+                style={s.btn}
+                onClick={handleArchiveProject}
+              >
+                📦 Archive
+              </button>
+
               <button
                 style={{ ...s.btn, ...s.dangerBtn }}
                 onClick={handleDelete}
               >
                 🗑 Delete
               </button>
-            )}
+            </>
+          )}
           </div>
         </div>
 
@@ -551,6 +711,8 @@ export default function ProjectDetailPage() {
                     `/editor/${projectId}/${f.fileId}`
                   )
                 }
+                onRename={handleRenameFile}
+                onDelete={handleDeleteFile}
               />
             )}
           </div>
@@ -615,6 +777,20 @@ export default function ProjectDetailPage() {
                     {m.role}
                   </div>
                 </div>
+
+                {isOwner && Number(m.userId) !== Number(userId) && (
+                  <button
+                    style={{
+                      ...s.iconBtn,
+                      color: '#dc2626',
+                      borderColor: '#fecaca',
+                      background: '#fef2f2',
+                    }}
+                    onClick={() => handleRemoveMember(m.userId)}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
           </div>

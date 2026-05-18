@@ -18,14 +18,26 @@ import {
 import {
   createSnapshot,
   getFileHistory,
+  restoreSnapshot,
+  diffSnapshots,
+  getBranches,
+  tagSnapshot,
+  getLatestSnapshot,
+  getSnapshotById,
+  createBranch,
 } from '../api/versionApi';
 import {
   submitExecution,
   getJob,
+  cancelJob,
 } from '../api/executionApi';
 import {
   getCommentsByFile,
   addComment,
+  updateComment,
+  deleteComment,
+  resolveComment,
+  unresolveComment,
 } from '../api/commentApi';
 import {
   createSession,
@@ -300,7 +312,13 @@ export default function EditorPage() {
   const [outputErr, setOutputErr] = useState('');
   const [runStatus, setRunStatus] = useState('');
   const [running, setRunning] = useState(false);
+  const [currentJobId, setCurrentJobId] = useState(null);
   const [snapshots, setSnaps] = useState([]);
+  const [selectedSnapshots, setSelectedSnapshots] = useState([]);
+  const [diffResult, setDiffResult] = useState(null);
+  const [branches, setBranches] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState('all');
+  const [latestSnapshot, setLatestSnapshot] = useState(null);
   const [comments, setComments] = useState([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(true);
@@ -310,26 +328,43 @@ export default function EditorPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
+
       try {
-        const [fRes, cRes, tRes, sRes, cmRes] =
+        const [fRes, cRes, tRes, sRes, cmRes, bRes] =
           await Promise.all([
             getFileById(fileId),
             getFileContent(fileId),
             getFileTree(projectId),
             getFileHistory(fileId),
             getCommentsByFile(fileId),
+            getBranches(projectId),
           ]);
+
         setFile(fRes.data.data);
         setContent(cRes.data.data || '');
         setTree(tRes.data.data || []);
         setSnaps(sRes.data.data || []);
         setComments(cmRes.data.data || []);
-      } catch {
+        setBranches(bRes.data.data || []);
+
+        try {
+          const latestRes = await getLatestSnapshot(fileId);
+          setLatestSnapshot(latestRes.data.data || null);
+        } catch (err) {
+          if (err.response?.status === 404) {
+            setLatestSnapshot(null);
+          } else {
+            console.error('Latest snapshot error:', err);
+          }
+        }
+      } catch (err) {
+        console.error('File load error:', err);
         toast.error('Failed to load file.');
       } finally {
         setLoading(false);
       }
     }
+
     load();
   }, [fileId, projectId]);
 
@@ -363,6 +398,7 @@ export default function EditorPage() {
         input: stdin
       });
       const jobId = res.data.data.jobId;
+      setCurrentJobId(jobId);
       let attempts = 0;
 
       const poll = async () => {
@@ -378,6 +414,7 @@ export default function EditorPage() {
           setOutput(job.stdout || '');
           setOutputErr(job.stderr || '');
           setRunning(false);
+          setCurrentJobId(null);
         } else if (attempts < 20) {
           attempts++;
           setTimeout(poll, 1500);
@@ -389,6 +426,22 @@ export default function EditorPage() {
     } catch {
       toast.error('Failed to submit.');
       setRunning(false);
+    }
+  };
+  const handleCancelRun = async () => {
+    if (!currentJobId) {
+      toast.error('No running job to cancel.');
+      return;
+    }
+
+    try {
+      await cancelJob(currentJobId);
+      setRunStatus('CANCELLED');
+      setRunning(false);
+      setCurrentJobId(null);
+      toast.success('Execution cancelled!');
+    } catch {
+      toast.error('Failed to cancel execution.');
     }
   };
 
@@ -408,6 +461,140 @@ export default function EditorPage() {
       setSnaps(sRes.data.data || []);
     } catch {
       toast.error('Failed to create snapshot.');
+    }
+  };
+  const refreshHistory = async () => {
+    const sRes = await getFileHistory(fileId);
+    setSnaps(sRes.data.data || []);
+
+    try {
+      const latestRes = await getLatestSnapshot(fileId);
+      setLatestSnapshot(latestRes.data.data || null);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setLatestSnapshot(null);
+      } else {
+        console.error('Latest snapshot refresh error:', err);
+      }
+    }
+  };
+
+  const handleRestoreSnapshot = async (snapshotId) => {
+    const ok = window.confirm(
+      'Restore this snapshot? Current code will be replaced.'
+    );
+
+    if (!ok) return;
+
+    try {
+      const res = await restoreSnapshot(snapshotId);
+      const restored = res.data.data;
+
+      if (restored?.content) {
+        setContent(restored.content);
+        await updateFileContent(fileId, restored.content);
+      } else {
+        const cRes = await getFileContent(fileId);
+        setContent(cRes.data.data || '');
+      }
+
+      await refreshHistory();
+      setSaved(true);
+      toast.success('Snapshot restored successfully!');
+    } catch {
+      toast.error('Failed to restore snapshot.');
+    }
+  };
+
+  const handleSelectSnapshot = (snapshotId) => {
+    if (selectedSnapshots.includes(snapshotId)) {
+      setSelectedSnapshots(
+        selectedSnapshots.filter((id) => id !== snapshotId)
+      );
+      return;
+    }
+
+    if (selectedSnapshots.length >= 2) {
+      toast.error('Select only 2 snapshots for comparison.');
+      return;
+    }
+
+    setSelectedSnapshots([...selectedSnapshots, snapshotId]);
+  };
+
+  const handleCompareSnapshots = async () => {
+    if (selectedSnapshots.length !== 2) {
+      toast.error('Select exactly 2 snapshots.');
+      return;
+    }
+
+    try {
+      const res = await diffSnapshots(
+        selectedSnapshots[0],
+        selectedSnapshots[1]
+      );
+
+      setDiffResult(res.data.data);
+      toast.success('Difference loaded!');
+    } catch {
+      toast.error('Failed to compare snapshots.');
+    }
+  };
+
+  const handleTagSnapshot = async (snapshotId) => {
+    const tag = prompt('Enter tag name, example: v1.0 or stable');
+    if (!tag) return;
+
+    try {
+      await tagSnapshot(snapshotId, tag);
+      await refreshHistory();
+      toast.success('Snapshot tagged!');
+    } catch {
+      toast.error('Failed to tag snapshot.');
+    }
+  };
+
+  const handleCreateBranch = async () => {
+    if (!latestSnapshot?.snapshotId) {
+      toast.error('Create a snapshot first.');
+      return;
+    }
+
+    const branchName = prompt('New branch name:');
+    if (!branchName) return;
+
+    try {
+      await createBranch({
+        projectId: Number(projectId),
+        fileId: Number(fileId),
+        branchName,
+        fromSnapshotId: latestSnapshot.snapshotId,
+      });
+
+      const bRes = await getBranches(projectId);
+      setBranches(bRes.data.data || []);
+
+      await refreshHistory();
+      toast.success('Branch created!');
+    } catch {
+      toast.error('Failed to create branch.');
+    }
+  };
+
+  const handleViewSnapshot = async (snapshotId) => {
+    try {
+      const res = await getSnapshotById(snapshotId);
+      const snap = res.data.data;
+
+      alert(
+        `Message: ${snap.message}\n` +
+        `Branch: ${snap.branch}\n` +
+        `Tag: ${snap.tag || 'No tag'}\n` +
+        `Created At: ${new Date(snap.createdAt).toLocaleString()}\n\n` +
+        `Content:\n${snap.content || 'No content found'}`
+      );
+    } catch {
+      toast.error('Failed to load snapshot.');
     }
   };
 
@@ -451,6 +638,52 @@ export default function EditorPage() {
       setComments(cmRes.data.data || []);
     } catch {
       toast.error('Failed to add comment.');
+    }
+  };
+
+  const refreshComments = async () => {
+    const cmRes = await getCommentsByFile(fileId);
+    setComments(cmRes.data.data || []);
+  };
+
+  const handleEditComment = async (comment) => {
+    const text = prompt('Edit comment:', comment.content);
+    if (!text || text === comment.content) return;
+
+    try {
+      await updateComment(comment.commentId, text);
+      await refreshComments();
+      toast.success('Comment updated!');
+    } catch {
+      toast.error('Failed to update comment.');
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Delete this comment?')) return;
+
+    try {
+      await deleteComment(commentId);
+      await refreshComments();
+      toast.success('Comment deleted!');
+    } catch {
+      toast.error('Failed to delete comment.');
+    }
+  };
+
+  const handleToggleResolve = async (comment) => {
+    try {
+      if (comment.resolved) {
+        await unresolveComment(comment.commentId);
+        toast.success('Comment unresolved!');
+      } else {
+        await resolveComment(comment.commentId);
+        toast.success('Comment resolved!');
+      }
+
+      await refreshComments();
+    } catch {
+      toast.error('Failed to update comment status.');
     }
   };
 
@@ -527,6 +760,19 @@ export default function EditorPage() {
             >
               {running ? '⏳ Running…' : '▶ Run'}
             </button>
+              {running && (
+              <button
+                style={{
+                  ...s.tBtn,
+                  color: '#dc2626',
+                  borderColor: '#fecaca',
+                  background: '#fef2f2',
+                }}
+                onClick={handleCancelRun}
+              >
+                Stop
+              </button>
+            )}
             <button
               style={s.tBtn}
               onClick={handleSnapshot}
@@ -652,6 +898,7 @@ export default function EditorPage() {
             )}
 
             {/* History */}
+            {/* History */}
             {panelTab === 'history' && (
               <>
                 <button
@@ -660,6 +907,68 @@ export default function EditorPage() {
                 >
                   📸 Create Snapshot
                 </button>
+                <button
+                style={s.panelBtn}
+                onClick={handleCreateBranch}
+              >
+                🌿 Create Branch
+              </button>
+
+                {latestSnapshot && (
+                  <div style={s.snapItem}>
+                    <div style={{ color: '#2563eb', fontWeight: '700' }}>
+                      Latest Snapshot
+                    </div>
+                    <div style={{ color: '#111827', marginTop: '4px' }}>
+                      {latestSnapshot.message}
+                    </div>
+                    <div style={{ color: '#6b7280', marginTop: '2px' }}>
+                      {new Date(latestSnapshot.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                )}
+
+                <select
+                  style={{
+                    ...s.stdinBox,
+                    minHeight: '40px',
+                    marginBottom: '10px',
+                  }}
+                  value={selectedBranch}
+                  onChange={(e) => setSelectedBranch(e.target.value)}
+                >
+                  <option value="all">All Branches</option>
+                  {branches.map((branch) => (
+                    <option key={branch} value={branch}>
+                      {branch}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  style={s.panelBtn}
+                  onClick={handleCompareSnapshots}
+                >
+                  Compare Selected Snapshots
+                </button>
+
+                {diffResult && (
+                  <div style={s.snapItem}>
+                    <div style={{ color: '#111827', fontWeight: '700' }}>
+                      Difference Result
+                    </div>
+                    <pre style={{
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      color: '#374151',
+                      fontSize: '11px',
+                      marginTop: '8px',
+                    }}>
+                      {JSON.stringify(diffResult, null, 2)}
+                    </pre>
+                  </div>
+                )}
+
                 {snapshots.length === 0 ? (
                   <div style={{
                     color: '#6b7280',
@@ -669,29 +978,98 @@ export default function EditorPage() {
                   }}>
                     No snapshots yet.
                   </div>
-                ) : snapshots.map((snap) => (
-                  <div
-                    key={snap.snapshotId}
-                    style={s.snapItem}
-                  >
-                    <div style={{ color: '#111827', fontWeight: '600' }}>
-                      {snap.message}
+                ) : snapshots
+                  .filter((snap) =>
+                    selectedBranch === 'all'
+                      ? true
+                      : snap.branch === selectedBranch
+                  )
+                  .map((snap) => (
+                    <div
+                      key={snap.snapshotId}
+                      style={s.snapItem}
+                    >
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '8px',
+                        color: '#111827',
+                      }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedSnapshots.includes(snap.snapshotId)}
+                          onChange={() => handleSelectSnapshot(snap.snapshotId)}
+                        />
+                        Select for compare
+                      </label>
+
+                      <div style={{ color: '#111827', fontWeight: '600' }}>
+                        {snap.message}
+                      </div>
+
+                      <div style={{
+                        color: '#4b5563',
+                        marginTop: '2px',
+                      }}>
+                        Branch: {snap.branch}
+                      </div>
+
+                      {snap.tag && (
+                        <div style={{
+                          color: '#2563eb',
+                          marginTop: '2px',
+                          fontWeight: '600',
+                        }}>
+                          Tag: {snap.tag}
+                        </div>
+                      )}
+
+                      <div style={{
+                        color: '#6b7280',
+                        marginTop: '2px',
+                      }}>
+                        {new Date(snap.createdAt).toLocaleString()}
+                      </div>
+
+                      <button
+                        style={{
+                          ...s.panelBtn,
+                          marginTop: '10px',
+                          marginBottom: '8px',
+                          padding: '8px',
+                          fontSize: '12px',
+                        }}
+                        onClick={() => handleRestoreSnapshot(snap.snapshotId)}
+                      >
+                        Restore
+                      </button>
+
+                      <button
+                        style={{
+                          ...s.panelBtn,
+                          marginBottom: '8px',
+                          padding: '8px',
+                          fontSize: '12px',
+                        }}
+                        onClick={() => handleTagSnapshot(snap.snapshotId)}
+                      >
+                        Add Tag
+                      </button>
+
+                      <button
+                        style={{
+                          ...s.panelBtn,
+                          marginBottom: 0,
+                          padding: '8px',
+                          fontSize: '12px',
+                        }}
+                        onClick={() => handleViewSnapshot(snap.snapshotId)}
+                      >
+                        View Details
+                      </button>
                     </div>
-                    <div style={{
-                      color: '#4b5563',
-                      marginTop: '2px',
-                    }}>
-                      {snap.branch}
-                    </div>
-                    <div style={{
-                      color: '#6b7280',
-                      marginTop: '2px',
-                    }}>
-                      {new Date(snap.createdAt)
-                        .toLocaleString()}
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </>
             )}
 
@@ -737,6 +1115,37 @@ export default function EditorPage() {
                     </div>
                     <div style={{ color: '#111827' }}>
                       {c.content}
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      gap: '8px',
+                      marginTop: '10px',
+                    }}>
+                      <button
+                        style={{ ...s.tBtn, padding: '6px 9px', fontSize: '11px' }}
+                        onClick={() => handleEditComment(c)}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        style={{ ...s.tBtn, padding: '6px 9px', fontSize: '11px' }}
+                        onClick={() => handleToggleResolve(c)}
+                      >
+                        {c.resolved ? 'Unresolve' : 'Resolve'}
+                      </button>
+
+                      <button
+                        style={{
+                          ...s.tBtn,
+                          padding: '6px 9px',
+                          fontSize: '11px',
+                          color: '#dc2626',
+                        }}
+                        onClick={() => handleDeleteComment(c.commentId)}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))}

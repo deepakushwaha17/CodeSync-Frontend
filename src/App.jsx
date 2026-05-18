@@ -22,6 +22,9 @@ import CollabPage        from './pages/CollabPage';
 import NotificationsPage
   from './pages/NotificationsPage';
 import ProfilePage       from './pages/ProfilePage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminRoute from './components/routes/AdminRoute';
+import DeveloperRoute from './components/routes/DeveloperRoute';
 
 function PrivateRoute({ children }) {
   const { token } = useAuth();
@@ -55,33 +58,31 @@ function AppRoutes() {
       <Route
         path="/dashboard"
         element={
-          <PrivateRoute><Dashboard /></PrivateRoute>
+          <DeveloperRoute><Dashboard /> </DeveloperRoute>
         }
       />
       <Route
         path="/projects"
         element={
-          <PrivateRoute><ProjectsPage /></PrivateRoute>
+          <DeveloperRoute><ProjectsPage /></DeveloperRoute>
         }
       />
       <Route
         path="/projects/:projectId"
         element={
-          <PrivateRoute>
-            <ProjectDetailPage />
-          </PrivateRoute>
+          <DeveloperRoute><ProjectDetailPage /></DeveloperRoute>
         }
       />
       <Route
         path="/editor/:projectId/:fileId"
         element={
-          <PrivateRoute><EditorPage /></PrivateRoute>
+          <DeveloperRoute><EditorPage /></DeveloperRoute>
         }
       />
       <Route
         path="/collab/:sessionId"
         element={
-          <PrivateRoute><CollabPage /></PrivateRoute>
+          <DeveloperRoute><CollabPage /></DeveloperRoute>
         }
       />
       <Route
@@ -98,6 +99,14 @@ function AppRoutes() {
           <PrivateRoute><ProfilePage /></PrivateRoute>
         }
       />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboardPage />
+          </AdminRoute>
+        }
+      />
 
       {/* Default */}
       <Route
@@ -109,6 +118,7 @@ function AppRoutes() {
           />
         }
       />
+      
     </Routes>
   );
 }

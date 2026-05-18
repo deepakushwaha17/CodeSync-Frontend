@@ -36,3 +36,6 @@ export const getBranches = (projectId) =>
 
 export const tagSnapshot = (id, tag) =>
   api.put(`/api/v1/versions/snapshots/${id}/tag`, { tag });
+
+export const createBranch = (data) =>
+  api.post('/api/v1/versions/branches', data);
